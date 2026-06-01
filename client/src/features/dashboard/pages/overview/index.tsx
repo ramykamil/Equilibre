@@ -218,7 +218,7 @@ export function OverviewPage() {
             <Sparkles className="size-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1 420 €</div>
+            <div className="text-2xl font-bold">1 420 DZD</div>
             <p className="text-xs text-muted-foreground mt-1">{t("statsRevenusDesc")}</p>
           </CardContent>
         </Card>

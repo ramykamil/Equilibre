@@ -15,9 +15,9 @@ export const statusColors: Record<OrderStatus, string> = {
 };
 
 export const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("fr-DZ", {
     style: "currency",
-    currency: "USD",
+    currency: "DZD",
   }).format(amount);
 };
 
