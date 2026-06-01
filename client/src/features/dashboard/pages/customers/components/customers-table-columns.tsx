@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import { CustomerActionsDropdown } from "./customers-actions-dropdown";
 import { ShieldCheck, ShieldAlert } from "lucide-react";
+import { useTranslation } from "@/providers/translation-provider";
 
 export const statusColors: Record<CustomerStatus, string> = {
   active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
@@ -16,18 +17,20 @@ export const statusColors: Record<CustomerStatus, string> = {
 };
 
 export const useCustomerColumns = () => {
+  const { t } = useTranslation();
+
   return useMemo<ColumnDef<Customer>[]>(
     () => [
       {
         accessorKey: "dossierNumber",
-        header: "Réf Dossier",
+        header: t("refDossier"),
         cell: ({ row }) => (
           <div className="font-semibold text-primary">{row.getValue("dossierNumber")}</div>
         ),
       },
       {
         accessorKey: "fullName",
-        header: "Patient",
+        header: t("patient"),
         cell: ({ row }) => (
           <div className="flex flex-col">
             <span className="font-medium text-foreground">{row.getValue("fullName")}</span>
@@ -39,15 +42,15 @@ export const useCustomerColumns = () => {
       },
       {
         accessorKey: "problemType",
-        header: "Spécificité / Trouble",
+        header: t("trouble"),
         cell: ({ row }) => <div className="text-sm font-medium">{row.getValue("problemType")}</div>,
       },
       {
         accessorKey: "psychometricScore",
-        header: "Score Tests",
+        header: t("scoreTests"),
         cell: ({ row }) => {
           const score = row.getValue("psychometricScore") as string;
-          const isHigh = score.includes("Élevé") || score.includes("Critique");
+          const isHigh = score.includes("Élevé") || score.includes("Critique") || score.includes("High") || score.includes("Critical");
           return (
             <Badge variant={isHigh ? "destructive" : "secondary"}>
               {score}
@@ -57,7 +60,7 @@ export const useCustomerColumns = () => {
       },
       {
         accessorKey: "doctorSharingAuthorized",
-        header: "Partage Médecin",
+        header: t("partageMedecin"),
         cell: ({ row }) => {
           const authorized = row.getValue("doctorSharingAuthorized") as boolean;
           return (
@@ -79,7 +82,7 @@ export const useCustomerColumns = () => {
       },
       {
         accessorKey: "secureHash",
-        header: "Code Sécurisé",
+        header: t("codeSecurise"),
         cell: ({ row }) => (
           <code className="text-xs px-2 py-0.5 bg-muted rounded border font-mono">
             {row.getValue("secureHash")}
@@ -88,7 +91,7 @@ export const useCustomerColumns = () => {
       },
       {
         accessorKey: "lastSession",
-        header: "Dernière Consultation",
+        header: t("derniereConsultation"),
         cell: ({ row }) => {
           const lastSession = row.getValue("lastSession") as string;
           return lastSession 
@@ -98,10 +101,10 @@ export const useCustomerColumns = () => {
       },
       {
         accessorKey: "status",
-        header: "Statut",
+        header: t("statut"),
         cell: ({ row }) => {
           const status = row.getValue("status") as CustomerStatus;
-          const label = status === "active" ? "Actif" : status === "pending" ? "En attente" : "Inactif";
+          const label = status === "active" ? t("active") : status === "pending" ? t("pending") : t("inactive");
           return (
             <Badge className={statusColors[status]}>
               {label}
@@ -115,6 +118,6 @@ export const useCustomerColumns = () => {
         cell: ({ row }) => <CustomerActionsDropdown customer={row.original} />,
       },
     ],
-    []
+    [t]
   );
 };

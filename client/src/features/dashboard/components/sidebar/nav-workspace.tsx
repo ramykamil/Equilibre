@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { User, ShieldAlert, Check } from "lucide-react";
+import { useTranslation } from "@/providers/translation-provider";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,9 +18,11 @@ export function NavWorkspace({
   activeRole: "patient" | "professional";
   onRoleChange: (role: "patient" | "professional") => void;
 }) {
+  const { t } = useTranslation();
+
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden" aria-label="Sélecteur d'Espace">
-      <SidebarGroupLabel>Sélecteur d'Espace</SidebarGroupLabel>
+    <SidebarGroup className="group-data-[collapsible=icon]:hidden" aria-label={t("selectorSpace")}>
+      <SidebarGroupLabel>{t("selectorSpace")}</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
@@ -33,7 +36,7 @@ export function NavWorkspace({
           >
             <div className="flex items-center gap-2">
               <ShieldAlert className="size-4" />
-              <span>Espace Coach/Thérapeute</span>
+              <span>{t("professionalSpace")}</span>
             </div>
             {activeRole === "professional" && <Check className="size-4" />}
           </SidebarMenuButton>
@@ -51,7 +54,7 @@ export function NavWorkspace({
           >
             <div className="flex items-center gap-2">
               <User className="size-4" />
-              <span>Espace Patient</span>
+              <span>{t("patientSpace")}</span>
             </div>
             {activeRole === "patient" && <Check className="size-4" />}
           </SidebarMenuButton>

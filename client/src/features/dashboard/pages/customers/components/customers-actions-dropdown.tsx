@@ -20,12 +20,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/providers/translation-provider";
 
 interface CustomerActionsProps {
   customer: Customer;
 }
 
 export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
+  const { t } = useTranslation();
+
   const handleViewDetails = () => {
     console.log("View customer details", customer.dossierNumber);
   };
@@ -59,7 +62,7 @@ export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-            <span className="sr-only">Ouvrir le menu</span>
+            <span className="sr-only">{t("openMenu")}</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -67,32 +70,32 @@ export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={handleViewDetails}>
             <Eye className="mr-2 h-4 w-4" />
-            <span>Voir le Dossier</span>
+            <span>{t("voirDossier")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleEditCustomer}>
             <Edit className="mr-2 h-4 w-4" />
-            <span>Modifier</span>
+            <span>{t("modifier")}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleViewInvoices}>
             <FileText className="mr-2 h-4 w-4" />
-            <span>Voir les Factures</span>
+            <span>{t("voirFactures")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSendEmail}>
             <Mail className="mr-2 h-4 w-4" />
-            <span>Envoyer un Message</span>
+            <span>{t("envoyerMessage")}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {(customer.status === "inactive" || customer.status === "blocked") && (
             <DropdownMenuItem onClick={handleActivateCustomer}>
               <UserCheck className="mr-2 h-4 w-4" />
-              <span>Activer</span>
+              <span>{t("activer")}</span>
             </DropdownMenuItem>
           )}
           {customer.status !== "blocked" && (
             <DropdownMenuItem onClick={handleBlockCustomer} className="text-amber-600">
               <Ban className="mr-2 h-4 w-4" />
-              <span>Désactiver</span>
+              <span>{t("desactiver")}</span>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -101,7 +104,7 @@ export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
             className="text-red-600"
           >
             <Trash className="mr-2 h-4 w-4" />
-            <span>Supprimer</span>
+            <span>{t("supprimer")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

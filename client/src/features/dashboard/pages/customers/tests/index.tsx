@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, ClipboardList, HelpCircle } from "lucide-react";
+import { useTranslation } from "@/providers/translation-provider";
 
 interface Question {
   id: number;
@@ -110,6 +111,7 @@ const TESTS = [
 ];
 
 export function PsychometricTestsPage() {
+  const { t } = useTranslation();
   const [selectedTest, setSelectedTest] = useState<typeof TESTS[0] | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
@@ -134,7 +136,6 @@ export function PsychometricTestsPage() {
     if (currentQuestionIndex < selectedTest.questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      // Calculate final score
       const totalScore = Object.values(answers).reduce((acc, curr) => acc + curr, 0);
       setScore(totalScore);
     }
@@ -155,16 +156,16 @@ export function PsychometricTestsPage() {
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto py-4">
       <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-bold tracking-tight">Tests Psychométriques & Compatibilité</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("testTitlePage")}</h1>
         <p className="text-muted-foreground text-sm">
-          Passez des évaluations pour suivre votre état émotionnel et partager les résultats avec votre thérapeute.
+          {t("testDescPage")}
         </p>
       </div>
 
       {!selectedTest ? (
         <div className="grid gap-4">
           {TESTS.map((test) => (
-            <Card key={test.id} className="hover:border-primary transition-all cursor-pointer" onClick={() => handleSelectTest(test.id)}>
+            <Card key={test.id} className="hover:border-primary transition-all cursor-pointer animate-in fade-in-50" onClick={() => handleSelectTest(test.id)}>
               <CardHeader className="flex flex-row items-start gap-4">
                 <div className="p-2 bg-primary/10 rounded-lg text-primary">
                   <ClipboardList className="size-6" />
@@ -175,7 +176,7 @@ export function PsychometricTestsPage() {
                 </div>
               </CardHeader>
               <CardFooter className="justify-end border-t pt-3 pb-3">
-                <Button variant="ghost" size="sm">Démarrer le test &rarr;</Button>
+                <Button variant="ghost" size="sm">{t("demarrerTest")} &rarr;</Button>
               </CardFooter>
             </Card>
           ))}
@@ -184,34 +185,34 @@ export function PsychometricTestsPage() {
         <Card className="text-center p-6 border-emerald-200 dark:border-emerald-900/30">
           <CardHeader className="flex flex-col items-center">
             <CheckCircle2 className="size-16 text-emerald-500 mb-2 animate-bounce" />
-            <CardTitle className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Évaluation Complétée !</CardTitle>
+            <CardTitle className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{t("testCompleted")}</CardTitle>
             <CardDescription className="max-w-md mx-auto">
-              Vos réponses ont été enregistrées avec succès dans votre dossier médical crypté.
+              {t("answersSaved")}
             </CardDescription>
           </CardHeader>
           <CardContent className="py-4">
             <div className="inline-flex flex-col items-center justify-center p-6 bg-muted rounded-full size-32 border-4 border-emerald-500/30">
               <span className="text-3xl font-extrabold text-foreground">{score}</span>
-              <span className="text-xs text-muted-foreground">sur 100</span>
+              <span className="text-xs text-muted-foreground">{t("outOf100")}</span>
             </div>
             <p className="mt-6 text-sm text-foreground max-w-sm mx-auto">
               {score >= 60 
-                ? "Niveau élevé. Nous vous recommandons d'aborder ces points lors de votre prochaine séance de coaching."
-                : "Niveau modéré ou équilibré. Continuez vos exercices d'évaluation réguliers."
+                ? t("highScoreDesc")
+                : t("lowScoreDesc")
               }
             </p>
           </CardContent>
           <CardFooter className="justify-center gap-4 border-t pt-4">
-            <Button variant="outline" onClick={handleReset}>Retour aux tests</Button>
-            <Button onClick={() => window.location.href = "/dashboard/customers"}>Voir mon Dossier</Button>
+            <Button variant="outline" onClick={handleReset}>{t("backToTests")}</Button>
+            <Button onClick={() => window.location.href = "/dashboard/customers"}>{t("viewMyDossier")}</Button>
           </CardFooter>
         </Card>
       ) : (
         <Card className="p-2">
           <CardHeader>
             <div className="flex justify-between items-center text-xs text-muted-foreground mb-2">
-              <span>Question {currentQuestionIndex + 1} sur {selectedTest.questions.length}</span>
-              <span>{Math.round(progressPercent)}% complété</span>
+              <span>{t("questionOf").replace("{current}", String(currentQuestionIndex + 1)).replace("{total}", String(selectedTest.questions.length))}</span>
+              <span>{t("percentCompleted").replace("{percent}", String(Math.round(progressPercent)))}</span>
             </div>
             <Progress value={progressPercent} className="h-2" />
             <CardTitle className="text-xl mt-4 flex gap-2 items-start font-semibold">
@@ -235,12 +236,12 @@ export function PsychometricTestsPage() {
             ))}
           </CardContent>
           <CardFooter className="justify-between border-t mt-4 pt-4">
-            <Button variant="ghost" onClick={handleReset}>Annuler</Button>
+            <Button variant="ghost" onClick={handleReset}>{t("annuler")}</Button>
             <Button 
               disabled={answers[currentQuestion?.id ?? 0] === undefined} 
               onClick={handleNext}
             >
-              {currentQuestionIndex === selectedTest.questions.length - 1 ? "Terminer" : "Suivant"}
+              {currentQuestionIndex === selectedTest.questions.length - 1 ? t("terminer") : t("suivant")}
             </Button>
           </CardFooter>
         </Card>

@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { useTranslation } from "@/providers/translation-provider";
 import { useCustomers } from "./hooks/use-customers";
 import { CustomersTable } from "./components/customers-table";
 import { CustomersFilters } from "./components/customers-filters";
 import { Button } from "@/components/ui/button";
 
 export function CustomersPage() {
+  const { t } = useTranslation();
   const {
     customers,
     allCustomers,
@@ -26,12 +28,12 @@ export function CustomersPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Dossiers Patients Codés</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("dossierTitle")}</h1>
         <div className="flex items-center gap-4">
           <Link href="/dashboard/customers/new">
             <Button>
               <Plus className="size-4" />
-              Nouveau Dossier
+              {t("newDossier")}
             </Button>
           </Link>
         </div>
@@ -57,16 +59,16 @@ export function CustomersPage() {
       {isEmpty && (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center animate-in fade-in-50">
           <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
-            <h3 className="mt-4 text-lg font-semibold">Aucun dossier trouvé</h3>
+            <h3 className="mt-4 text-lg font-semibold">{t("noDossierFound")}</h3>
             <p className="mb-4 mt-2 text-sm text-muted-foreground">
-              Ajustez vos filtres de recherche pour trouver le dossier patient souhaité.
+              {t("adjustFilters")}
             </p>
             <Button variant="outline" onClick={handleClearFilters}>
-              Réinitialiser les filtres
+              {t("resetFilters")}
             </Button>
           </div>
         </div>
       )}
     </div>
   );
-} 
+}

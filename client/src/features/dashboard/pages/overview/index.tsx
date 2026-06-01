@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useTranslation } from "@/providers/translation-provider";
 import { 
   Users, Calendar, ClipboardCheck, Sparkles, 
   Smile, ShieldCheck, Award, MessageSquare, CheckSquare 
@@ -34,6 +35,7 @@ const troubleDistribution = [
 ];
 
 export function OverviewPage() {
+  const { t } = useTranslation();
   const [role, setRole] = useState<"patient" | "professional">("professional");
 
   useEffect(() => {
@@ -63,56 +65,56 @@ export function OverviewPage() {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Bonjour, Ramy</h1>
-          <p className="text-muted-foreground text-sm">Votre espace d'accompagnement relationnel et personnel Équilibre.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("welcome")}, Ramy</h1>
+          <p className="text-muted-foreground text-sm">{t("patientOverviewDesc")}</p>
         </div>
 
         {/* Patient Key Stats */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Prochaine séance</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("nextSession")}</CardTitle>
               <Calendar className="size-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-lg font-bold">12 Juin à 14h00</div>
-              <p className="text-xs text-muted-foreground mt-1">Avec Dr. Sophie Martin</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("nextSessionDesc")}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Humeur moyenne (7j)</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("avgMood")}</CardTitle>
               <Smile className="size-4 text-emerald-500" />
             </CardHeader>
             <CardContent>
               <div className="text-lg font-bold flex items-center gap-1.5">
                 <span>4.1 / 5</span>
-                <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Stable</Badge>
+                <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">{t("stableBadge")}</Badge>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Excellent bien-être émotionnel</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("moodDesc")}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Objectifs complétés</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("completedGoals")}</CardTitle>
               <Award className="size-4 text-amber-500" />
             </CardHeader>
             <CardContent>
               <div className="text-lg font-bold">{completedGoalsCount} sur {patientGoals.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">{Math.round(goalsProgress)}% de réussite</p>
+              <p className="text-xs text-muted-foreground mt-1">{Math.round(goalsProgress)}% {t("goalsProgressDesc")}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Dossier médical</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("medicalDossier")}</CardTitle>
               <ShieldCheck className="size-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">Chiffré HDS</div>
-              <p className="text-xs text-muted-foreground mt-1">Partage médecin : Actif</p>
+              <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{t("encryptedHds")}</div>
+              <p className="text-xs text-muted-foreground mt-1">{t("sharingActive")}</p>
             </CardContent>
           </Card>
         </div>
@@ -122,8 +124,8 @@ export function OverviewPage() {
           {/* Mood History Chart */}
           <Card className="lg:col-span-4">
             <CardHeader>
-              <CardTitle>Suivi de mon Humeur</CardTitle>
-              <CardDescription>Évolution de vos évaluations d'humeur quotidiennes</CardDescription>
+              <CardTitle>{t("myMoodTracking")}</CardTitle>
+              <CardDescription>{t("moodHistoryDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="h-[240px] pt-4">
               <ResponsiveContainer width="100%" height="100%">
@@ -141,8 +143,8 @@ export function OverviewPage() {
           {/* Goals Checklist */}
           <Card className="lg:col-span-3">
             <CardHeader>
-              <CardTitle>Objectifs fixés avec mon Coach</CardTitle>
-              <CardDescription>Cochez vos objectifs au fur et à mesure.</CardDescription>
+              <CardTitle>{t("goalsTitle")}</CardTitle>
+              <CardDescription>{t("goalsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <Progress value={goalsProgress} className="h-2" />
@@ -171,53 +173,53 @@ export function OverviewPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Tableau de Bord Coaching</h1>
-        <p className="text-muted-foreground text-sm">Gestion globale des dossiers patients, tests cliniques et consultations.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("brand")} - {t("professionalSpace")}</h1>
+        <p className="text-muted-foreground text-sm">{t("professionalOverviewDesc")}</p>
       </div>
 
       {/* Specialist Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Patients Suivis</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("statsPatients")}</CardTitle>
             <Users className="size-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">34</div>
-            <p className="text-xs text-muted-foreground mt-1">+3 nouveaux cette semaine</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("statsPatientsDesc")}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">RDV Confirmés</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("statsRdv")}</CardTitle>
             <Calendar className="size-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">18</div>
-            <p className="text-xs text-muted-foreground mt-1">Prochaine consultation à 14h30</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("statsRdvDesc")}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Évaluations Cliniques</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("statsEval")}</CardTitle>
             <ClipboardCheck className="size-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">9</div>
-            <p className="text-xs text-muted-foreground mt-1">Tests psychométriques complétés</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("statsEvalDesc")}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Revenus Bruts (Commission)</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("statsRevenus")}</CardTitle>
             <Sparkles className="size-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1 420 €</div>
-            <p className="text-xs text-muted-foreground mt-1">Prélèvement de 15% inclus</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("statsRevenusDesc")}</p>
           </CardContent>
         </Card>
       </div>
@@ -227,8 +229,8 @@ export function OverviewPage() {
         {/* Trouble Distribution Chart */}
         <Card className="lg:col-span-4">
           <CardHeader>
-            <CardTitle>Spécificités & Troubles Cliniques</CardTitle>
-            <CardDescription>Répartition des problématiques de vos patients</CardDescription>
+            <CardTitle>{t("troubleDistributionTitle")}</CardTitle>
+            <CardDescription>{t("troubleDistributionDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="h-[240px] pt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -246,8 +248,8 @@ export function OverviewPage() {
         {/* Recent Patient Actions */}
         <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle>Activité Récente</CardTitle>
-            <CardDescription>Mises à jour des dossiers patients</CardDescription>
+            <CardTitle>{t("recentActivityTitle")}</CardTitle>
+            <CardDescription>{t("recentActivityDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-start gap-3 rounded-lg border p-3">

@@ -15,6 +15,7 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 
 /**
  * DashboardHeader Component
@@ -73,6 +74,7 @@ export const DashboardHeader = () => {
           <span className="sr-only">Notifications</span>
         </Button>
 
+        <LanguageToggle />
         <ModeToggle />
       </div>
     </header>

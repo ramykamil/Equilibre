@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Zap, SquareTerminal, Users, FileText, BarChart, Settings2, HandCoins } from "lucide-react";
 
+import { useTranslation } from "@/providers/translation-provider";
 import { NavMain } from "@/features/dashboard/components/sidebar/nav-main";
 import { NavWorkspace } from "@/features/dashboard/components/sidebar/nav-workspace";
 import { NavSecondary } from "@/features/dashboard/components/sidebar/nav-secondary";
@@ -22,6 +23,7 @@ import { sidebarMenus } from "@/data/sidebar-menus";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
+  const { t } = useTranslation();
   const [activeRole, setActiveRole] = React.useState<"patient" | "professional">("professional");
 
   React.useEffect(() => {
@@ -38,75 +40,188 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const handleRoleChange = (role: "patient" | "professional") => {
     setActiveRole(role);
     localStorage.setItem("user-role", role);
-    // Refresh to update dashboard states across pages
     window.location.reload();
   };
 
-  // Define dynamic menu lists based on the active role
+  // Menu lists using Translation Keys
   const patientMenus = [
     {
-      title: "Mon Espace",
+      title: t("patientSpace"),
       url: "/dashboard/overview",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "Vue d'ensemble",
+          title: t("overview"),
           url: "/dashboard/overview",
         },
         {
-          title: "Journal d'Humeur",
+          title: t("moodTracking"),
           url: "/dashboard/reports/moods",
         },
       ],
     },
     {
-      title: "Mes Rendez-vous",
+      title: t("myConsultations"),
       url: "/dashboard/leads",
       icon: HandCoins,
       items: [
         {
-          title: "Réserver une séance",
+          title: t("bookSession"),
           url: "/dashboard/leads/new",
         },
         {
-          title: "Mes Consultations",
+          title: t("myConsultations"),
           url: "/dashboard/leads",
         },
       ],
     },
     {
-      title: "Dossier & Tests",
+      title: t("codedFiles"),
       url: "/dashboard/customers",
       icon: Users,
       items: [
         {
-          title: "Mon Dossier Codé",
+          title: t("myCodedDossier"),
           url: "/dashboard/customers",
         },
         {
-          title: "Passer un Test",
+          title: t("takeTest"),
           url: "/dashboard/customers/tests",
         },
       ],
     },
     {
-      title: "Mes Factures",
+      title: t("billing"),
       url: "/dashboard/invoices",
       icon: FileText,
       items: [
         {
-          title: "Reçus & Paiements",
+          title: t("receiptsPayments"),
           url: "/dashboard/invoices",
         },
       ],
     },
   ];
 
-  const menuItems = activeRole === "professional" ? sidebarMenus.navMain : patientMenus;
+  const specialistMenus = [
+    {
+      title: t("dashboard"),
+      url: "/dashboard/overview",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: t("overview"),
+          url: "/dashboard/overview",
+        },
+        {
+          title: t("activityLogs"),
+          url: "/dashboard/activity-logs",
+        },
+      ],
+    },
+    {
+      title: t("appointments"),
+      url: "/dashboard/leads",
+      icon: HandCoins,
+      items: [
+        {
+          title: t("allAppointments"),
+          url: "/dashboard/leads",
+        },
+        {
+          title: t("interactiveCalendar"),
+          url: "/dashboard/leads/calendar",
+        },
+        {
+          title: t("pendingConsultations"),
+          url: "/dashboard/leads/pending",
+        },
+      ],
+    },
+    {
+      title: t("patientsDossiers"),
+      url: "/dashboard/customers",
+      icon: Users,
+      items: [
+        {
+          title: t("codedFiles"),
+          url: "/dashboard/customers",
+        },
+        {
+          title: t("doctorSharing"),
+          url: "/dashboard/customers/segments",
+        },
+        {
+          title: t("psychometricTests"),
+          url: "/dashboard/customers/tests",
+        },
+      ],
+    },
+    {
+      title: t("billing"),
+      url: "/dashboard/invoices",
+      icon: FileText,
+      items: [
+        {
+          title: t("allInvoices"),
+          url: "/dashboard/invoices",
+        },
+        {
+          title: t("pendingPayments"),
+          url: "/dashboard/invoices/pending",
+        },
+        {
+          title: t("paidSessions"),
+          url: "/dashboard/invoices/paid",
+        },
+      ],
+    },
+    {
+      title: t("analyticsSuivi"),
+      url: "/dashboard/reports/sales",
+      icon: BarChart,
+      items: [
+        {
+          title: t("statsConsultations"),
+          url: "/dashboard/reports/sales",
+        },
+        {
+          title: t("moodTracking"),
+          url: "/dashboard/reports/moods",
+        },
+        {
+          title: t("patientGoals"),
+          url: "/dashboard/reports/goals",
+        },
+      ],
+    },
+    {
+      title: t("configuration"),
+      url: "/dashboard/settings/general",
+      icon: Settings2,
+      items: [
+        {
+          title: t("general"),
+          url: "/dashboard/settings/general",
+        },
+        {
+          title: t("security2fa"),
+          url: "/dashboard/settings/users",
+        },
+        {
+          title: t("integrationsHds"),
+          url: "/dashboard/settings/integrations",
+        },
+      ],
+    },
+  ];
+
+  const menuItems = activeRole === "professional" ? specialistMenus : patientMenus;
 
   const activeUser = activeRole === "professional" 
-    ? sidebarMenus.user 
+    ? { ...sidebarMenus.user, name: "Dr. Sophie Martin" } 
     : { name: "Ramy Kamil", email: "ramy@example.com", avatar: "/avatars/avatar.png" };
 
   return (
@@ -132,8 +247,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Zap className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Équilibre</span>
-                  <span className="truncate text-xs">Coaching & Thérapie</span>
+                  <span className="truncate font-semibold">{t("brand")}</span>
+                  <span className="truncate text-xs">{t("subtitle")}</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -143,7 +258,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={menuItems} />
         <NavWorkspace activeRole={activeRole} onRoleChange={handleRoleChange} />
-        <NavSecondary items={sidebarMenus.navSecondary} className="mt-auto" />
+        <NavSecondary 
+          items={sidebarMenus.navSecondary.map(item => ({
+            ...item,
+            title: item.title.includes("Aide") ? t("helpUrgency") : t("feedback")
+          }))} 
+          className="mt-auto" 
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={activeUser} />
