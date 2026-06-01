@@ -41,10 +41,10 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         const searchableFields = [
-          customer.customerNumber,
+          customer.dossierNumber,
           customer.fullName,
           customer.email,
-          customer.company,
+          customer.problemType,
           customer.location,
         ].map((field) => field.toLowerCase());
 
@@ -83,11 +83,16 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
 
     // Create a sorting function that makes comparisons based on field type
     const compareValues = (
-      a: number | string | Date,
-      b: number | string | Date,
+      a: any,
+      b: any,
       desc: boolean
     ): number => {
       const direction = desc ? -1 : 1;
+
+      // Handle boolean comparison
+      if (typeof a === "boolean" && typeof b === "boolean") {
+        return (a === b ? 0 : a ? 1 : -1) * direction;
+      }
 
       // Handle different value types
       if (a === b) return 0;

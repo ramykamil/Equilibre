@@ -6,7 +6,6 @@ import {
   Eye, 
   Edit, 
   Trash, 
-  ShoppingCart, 
   Mail, 
   FileText,
   Ban,
@@ -28,48 +27,31 @@ interface CustomerActionsProps {
 
 export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
   const handleViewDetails = () => {
-    // Implement view details functionality
-    console.log("View customer details", customer.customerNumber);
+    console.log("View customer details", customer.dossierNumber);
   };
 
   const handleEditCustomer = () => {
-    // Implement edit customer functionality
-    console.log("Edit customer", customer.customerNumber);
-  };
-
-  const handleViewPurchases = () => {
-    // Implement view purchases functionality
-    console.log("View purchases for", customer.customerNumber);
+    console.log("Edit customer", customer.dossierNumber);
   };
 
   const handleSendEmail = () => {
-    // Implement email functionality
     console.log("Email customer", customer.email);
   };
 
-  const handleCreateOrder = () => {
-    // Implement new order functionality
-    console.log("Create order for", customer.customerNumber);
-  };
-
   const handleViewInvoices = () => {
-    // Implement view invoices functionality
-    console.log("View invoices for", customer.customerNumber);
+    console.log("View invoices for", customer.dossierNumber);
   };
 
   const handleActivateCustomer = () => {
-    // Implement activation functionality
-    console.log("Activate customer", customer.customerNumber);
+    console.log("Activate customer", customer.dossierNumber);
   };
 
   const handleBlockCustomer = () => {
-    // Implement block functionality
-    console.log("Block customer", customer.customerNumber);
+    console.log("Block customer", customer.dossierNumber);
   };
 
   const handleDeleteCustomer = () => {
-    // Implement delete functionality
-    console.log("Delete customer", customer.customerNumber);
+    console.log("Delete customer", customer.dossierNumber);
   };
 
   return (
@@ -77,7 +59,7 @@ export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">Ouvrir le menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -85,40 +67,32 @@ export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={handleViewDetails}>
             <Eye className="mr-2 h-4 w-4" />
-            <span>View Details</span>
+            <span>Voir le Dossier</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleEditCustomer}>
             <Edit className="mr-2 h-4 w-4" />
-            <span>Edit Customer</span>
+            <span>Modifier</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleViewPurchases}>
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            <span>View Purchases</span>
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleViewInvoices}>
             <FileText className="mr-2 h-4 w-4" />
-            <span>View Invoices</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleCreateOrder}>
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            <span>Create Order</span>
+            <span>Voir les Factures</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSendEmail}>
             <Mail className="mr-2 h-4 w-4" />
-            <span>Send Email</span>
+            <span>Envoyer un Message</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {(customer.status === "inactive" || customer.status === "blocked") && (
             <DropdownMenuItem onClick={handleActivateCustomer}>
               <UserCheck className="mr-2 h-4 w-4" />
-              <span>Activate Customer</span>
+              <span>Activer</span>
             </DropdownMenuItem>
           )}
           {customer.status !== "blocked" && (
             <DropdownMenuItem onClick={handleBlockCustomer} className="text-amber-600">
               <Ban className="mr-2 h-4 w-4" />
-              <span>Block Customer</span>
+              <span>Désactiver</span>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -127,10 +101,10 @@ export function CustomerActionsDropdown({ customer }: CustomerActionsProps) {
             className="text-red-600"
           >
             <Trash className="mr-2 h-4 w-4" />
-            <span>Delete Customer</span>
+            <span>Supprimer</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );
-} 
+}

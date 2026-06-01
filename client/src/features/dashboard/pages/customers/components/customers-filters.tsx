@@ -21,11 +21,10 @@ interface CustomersFiltersProps {
 }
 
 const STATUS_OPTIONS: { label: string; value: CustomerStatus | "all" }[] = [
-  { label: "All", value: "all" },
-  { label: "Active", value: "active" },
-  { label: "Inactive", value: "inactive" },
-  { label: "Pending", value: "pending" },
-  { label: "Blocked", value: "blocked" },
+  { label: "Tous", value: "all" },
+  { label: "Actif", value: "active" },
+  { label: "Inactif", value: "inactive" },
+  { label: "En attente", value: "pending" },
 ];
 
 export function CustomersFilters({
@@ -37,7 +36,7 @@ export function CustomersFilters({
       <div className="relative flex-1">
         <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
-          placeholder="Search customers..."
+          placeholder="Rechercher un dossier patient..."
           value={filters.search}
           onChange={(e) => onFiltersChange({ search: e.target.value })}
           className="pl-9"
