@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Customer, CustomerFilters } from "@/features/dashboard/pages/customers/types/customer";
 import { mockCustomers } from "../data/mock-customers";
+import { supabase } from "@/lib/supabase";
 import {
   SortingState,
   PaginationState,
@@ -12,6 +13,10 @@ interface UseCustomersProps {
 }
 
 export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersProps = {}) {
+  const [customersList, setCustomersList] = useState<Customer[]>(initialCustomers);
+  const [loading, setLoading] = useState(true);
+  const [usingLiveDb, setUsingLiveDb] = useState(false);
+
   const [filters, setFilters] = useState<CustomerFilters>({
     status: "all",
     search: "",
@@ -30,8 +35,46 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
     pageSize: 10,
   });
 
+  useEffect(() => {
+    async function loadPatients() {
+      try {
+        const { data, error } = await supabase
+          .from("confidential_dossiers")
+          .select("*");
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          // Map Supabase rows to client model
+          const mapped: Customer[] = data.map((item: any, idx: number) => ({
+            id: item.id,
+            dossierNumber: `DOS-2026-0${idx + 1}`,
+            fullName: item.patient_name || "Patient Algérien",
+            email: item.patient_email || "patient@equilibre.dz",
+            phone: item.patient_phone || "+213 550 00 00 00",
+            secureHash: item.secure_key_hash || "eq_sec_default",
+            doctorSharingAuthorized: item.doctor_sharing_authorized || false,
+            problemType: item.problem_type || "Troubles Divers",
+            psychometricScore: item.psychometric_score || "N/A",
+            status: (item.status as any) || "active",
+            dateJoined: item.created_at,
+            lastSession: item.updated_at,
+            location: item.location || "Alger, Algérie",
+          }));
+          setCustomersList(mapped);
+          setUsingLiveDb(true);
+        }
+      } catch (err) {
+        console.warn("Could not load live dossiers, falling back to mock Algerian data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPatients();
+  }, []);
+
   const filteredCustomers = useMemo(() => {
-    return initialCustomers.filter((customer) => {
+    return customersList.filter((customer) => {
       // Status filter
       if (filters.status !== "all" && customer.status !== filters.status) {
         return false;
@@ -53,7 +96,7 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
         }
       }
 
-      // Date range filter - using dateJoined for filtering
+      // Date range filter
       if (filters.dateRange.from || filters.dateRange.to) {
         const customerJoinDate = new Date(customer.dateJoined);
         if (filters.dateRange.from && customerJoinDate < filters.dateRange.from) {
@@ -66,22 +109,18 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
 
       return true;
     });
-  }, [initialCustomers, filters]);
+  }, [customersList, filters]);
 
-  // For TanStack table, we need to handle pagination and sorting separately
+  // For TanStack table, handle pagination and sorting separately
   const paginatedAndSortedCustomers = useMemo(() => {
-    // Early return if no filters
     if (filteredCustomers.length === 0) return [];
 
-    // Skip sorting if no sort criteria
     if (sorting.length === 0) {
-      // Just apply pagination
       const startIdx = pagination.pageIndex * pagination.pageSize;
       const endIdx = startIdx + pagination.pageSize;
       return filteredCustomers.slice(startIdx, endIdx);
     }
 
-    // Create a sorting function that makes comparisons based on field type
     const compareValues = (
       a: any,
       b: any,
@@ -89,21 +128,15 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
     ): number => {
       const direction = desc ? -1 : 1;
 
-      // Handle boolean comparison
       if (typeof a === "boolean" && typeof b === "boolean") {
         return (a === b ? 0 : a ? 1 : -1) * direction;
       }
 
-      // Handle different value types
       if (a === b) return 0;
-
-      // Handle null/undefined values
       if (a == null) return direction;
       if (b == null) return -direction;
 
-      // Check if values are dates (try to detect ISO strings)
       if (typeof a === "string" && typeof b === "string") {
-        // ISO date format detection (more reliable than checking for "T")
         const isDateA = /^\d{4}-\d{2}-\d{2}(T|\s)/.test(a);
         const isDateB = /^\d{4}-\d{2}-\d{2}(T|\s)/.test(b);
 
@@ -113,22 +146,17 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
           return (dateA - dateB) * direction;
         }
 
-        // Regular string comparison
         return a.localeCompare(b) * direction;
       }
 
-      // Number comparison
       if (typeof a === "number" && typeof b === "number") {
         return (a - b) * direction;
       }
 
-      // Default comparison (converts to string)
       return String(a).localeCompare(String(b)) * direction;
     };
 
-    // Apply sorting
     const sortedCustomers = [...filteredCustomers].sort((a, b) => {
-      // Handle multi-sorting using sortingState array
       for (const sort of sorting) {
         const key = sort.id as keyof Customer;
         const compared = compareValues(a[key], b[key], sort.desc);
@@ -137,7 +165,6 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
       return 0;
     });
 
-    // Apply pagination
     const startIdx = pagination.pageIndex * pagination.pageSize;
     const endIdx = startIdx + pagination.pageSize;
     return sortedCustomers.slice(startIdx, endIdx);
@@ -145,7 +172,6 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
 
   const updateFilters = (newFilters: Partial<CustomerFilters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
-    // Reset to first page when filters change
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
@@ -177,20 +203,17 @@ export function useCustomers({ initialCustomers = mockCustomers }: UseCustomersP
   };
 
   return {
-    // Raw filtered customers (no pagination applied)
     allCustomers: filteredCustomers,
-    // Customers with pagination and sorting applied
     customers: paginatedAndSortedCustomers,
-    // Total count for pagination
     pageCount: Math.ceil(filteredCustomers.length / pagination.pageSize),
-    // States
     filters,
     sorting,
     pagination,
-    // Update handlers
+    loading,
+    usingLiveDb,
     updateFilters,
     handleSortingChange,
     handlePaginationChange,
     handleClearFilters,
   };
-} 
+}

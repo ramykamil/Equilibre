@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Invoice, InvoiceFilters } from "@/features/dashboard/pages/invoices/types/invoice";
 import { mockInvoices } from "../data/mock-invoices";
+import { supabase } from "@/lib/supabase";
 import {
   SortingState,
   PaginationState,
@@ -12,6 +13,9 @@ interface UseInvoicesProps {
 }
 
 export function useInvoices({ initialInvoices = mockInvoices }: UseInvoicesProps = {}) {
+  const [invoicesList, setInvoicesList] = useState<Invoice[]>(initialInvoices);
+  const [loading, setLoading] = useState(true);
+
   const [filters, setFilters] = useState<InvoiceFilters>({
     status: "all",
     search: "",
@@ -30,8 +34,41 @@ export function useInvoices({ initialInvoices = mockInvoices }: UseInvoicesProps
     pageSize: 10,
   });
 
+  useEffect(() => {
+    async function loadInvoices() {
+      try {
+        const { data, error } = await supabase
+          .from("invoices")
+          .select("*");
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const mapped: Invoice[] = data.map((item: any, idx: number) => ({
+            id: item.id,
+            invoiceNumber: `INV-2026-0${idx + 1}`,
+            customerName: item.patient_name || "Patient Algérien",
+            email: item.patient_email || "patient@equilibre.dz",
+            amount: Number(item.amount),
+            status: item.status || "pending",
+            date: item.created_at,
+            dueDate: item.created_at,
+            items: 1,
+            paymentMethod: "credit_card",
+          }));
+          setInvoicesList(mapped);
+        }
+      } catch (err) {
+        console.warn("Could not load live invoices, using mock Algerian data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadInvoices();
+  }, []);
+
   const filteredInvoices = useMemo(() => {
-    return initialInvoices.filter((invoice) => {
+    return invoicesList.filter((invoice) => {
       // Status filter
       if (filters.status !== "all" && invoice.status !== filters.status) {
         return false;
@@ -64,39 +101,30 @@ export function useInvoices({ initialInvoices = mockInvoices }: UseInvoicesProps
 
       return true;
     });
-  }, [initialInvoices, filters]);
+  }, [invoicesList, filters]);
 
-  // For TanStack table, we need to handle pagination and sorting separately
+  // For TanStack table, handle pagination and sorting separately
   const paginatedAndSortedInvoices = useMemo(() => {
-    // Early return if no filters
     if (filteredInvoices.length === 0) return [];
 
-    // Skip sorting if no sort criteria
     if (sorting.length === 0) {
-      // Just apply pagination
       const startIdx = pagination.pageIndex * pagination.pageSize;
       const endIdx = startIdx + pagination.pageSize;
       return filteredInvoices.slice(startIdx, endIdx);
     }
 
-    // Create a sorting function that makes comparisons based on field type
     const compareValues = (
-      a: number | string | Date,
-      b: number | string | Date,
+      a: any,
+      b: any,
       desc: boolean
     ): number => {
       const direction = desc ? -1 : 1;
 
-      // Handle different value types
       if (a === b) return 0;
-
-      // Handle null/undefined values
       if (a == null) return direction;
       if (b == null) return -direction;
 
-      // Check if values are dates (try to detect ISO strings)
       if (typeof a === "string" && typeof b === "string") {
-        // ISO date format detection (more reliable than checking for "T")
         const isDateA = /^\d{4}-\d{2}-\d{2}(T|\s)/.test(a);
         const isDateB = /^\d{4}-\d{2}-\d{2}(T|\s)/.test(b);
 
@@ -106,22 +134,17 @@ export function useInvoices({ initialInvoices = mockInvoices }: UseInvoicesProps
           return (dateA - dateB) * direction;
         }
 
-        // Regular string comparison
         return a.localeCompare(b) * direction;
       }
 
-      // Number comparison
       if (typeof a === "number" && typeof b === "number") {
         return (a - b) * direction;
       }
 
-      // Default comparison (converts to string)
       return String(a).localeCompare(String(b)) * direction;
     };
 
-    // Apply sorting
     const sortedInvoices = [...filteredInvoices].sort((a, b) => {
-      // Handle multi-sorting using sortingState array
       for (const sort of sorting) {
         const key = sort.id as keyof Invoice;
         const compared = compareValues(a[key], b[key], sort.desc);
@@ -130,7 +153,6 @@ export function useInvoices({ initialInvoices = mockInvoices }: UseInvoicesProps
       return 0;
     });
 
-    // Apply pagination
     const startIdx = pagination.pageIndex * pagination.pageSize;
     const endIdx = startIdx + pagination.pageSize;
     return sortedInvoices.slice(startIdx, endIdx);
@@ -138,7 +160,6 @@ export function useInvoices({ initialInvoices = mockInvoices }: UseInvoicesProps
 
   const updateFilters = (newFilters: Partial<InvoiceFilters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
-    // Reset to first page when filters change
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
@@ -170,20 +191,16 @@ export function useInvoices({ initialInvoices = mockInvoices }: UseInvoicesProps
   };
 
   return {
-    // Raw filtered invoices (no pagination applied)
     allInvoices: filteredInvoices,
-    // Invoices with pagination and sorting applied
     invoices: paginatedAndSortedInvoices,
-    // Total count for pagination
     pageCount: Math.ceil(filteredInvoices.length / pagination.pageSize),
-    // States
     filters,
     sorting,
     pagination,
-    // Update handlers
+    loading,
     updateFilters,
     handleSortingChange,
     handlePaginationChange,
     handleClearFilters,
   };
-} 
+}

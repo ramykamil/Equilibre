@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Lead, LeadFilters } from "@/features/dashboard/pages/leads/types/lead";
 import { mockLeads } from "../data/mock-leads";
+import { supabase } from "@/lib/supabase";
 import {
   SortingState,
   PaginationState,
@@ -12,6 +13,9 @@ interface UseLeadsProps {
 }
 
 export function useLeads({ initialLeads = mockLeads }: UseLeadsProps = {}) {
+  const [leadsList, setLeadsList] = useState<Lead[]>(initialLeads);
+  const [loading, setLoading] = useState(true);
+
   const [filters, setFilters] = useState<LeadFilters>({
     status: "all",
     search: "",
@@ -30,8 +34,41 @@ export function useLeads({ initialLeads = mockLeads }: UseLeadsProps = {}) {
     pageSize: 10,
   });
 
+  useEffect(() => {
+    async function loadAppointments() {
+      try {
+        const { data, error } = await supabase
+          .from("appointments")
+          .select("*");
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const mapped: Lead[] = data.map((item: any, idx: number) => ({
+            id: item.id,
+            leadNumber: `RDV-2026-0${idx + 1}`,
+            fullName: item.patient_name || "Patient Algérien",
+            email: item.patient_email || "patient@equilibre.dz",
+            phone: item.patient_phone || "+213 550 00 00 00",
+            company: item.problem_type || "Coaching & Harmonie",
+            value: Number(item.price || 3500),
+            status: item.status || "new",
+            date: item.scheduled_at,
+            source: "website",
+          }));
+          setLeadsList(mapped);
+        }
+      } catch (err) {
+        console.warn("Could not load live appointments, using mock Algerian data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAppointments();
+  }, []);
+
   const filteredLeads = useMemo(() => {
-    return initialLeads.filter((lead) => {
+    return leadsList.filter((lead) => {
       // Status filter
       if (filters.status !== "all" && lead.status !== filters.status) {
         return false;
@@ -65,39 +102,30 @@ export function useLeads({ initialLeads = mockLeads }: UseLeadsProps = {}) {
 
       return true;
     });
-  }, [initialLeads, filters]);
+  }, [leadsList, filters]);
 
-  // For TanStack table, we need to handle pagination and sorting separately
+  // For TanStack table, handle pagination and sorting separately
   const paginatedAndSortedLeads = useMemo(() => {
-    // Early return if no filters
     if (filteredLeads.length === 0) return [];
 
-    // Skip sorting if no sort criteria
     if (sorting.length === 0) {
-      // Just apply pagination
       const startIdx = pagination.pageIndex * pagination.pageSize;
       const endIdx = startIdx + pagination.pageSize;
       return filteredLeads.slice(startIdx, endIdx);
     }
 
-    // Create a sorting function that makes comparisons based on field type
     const compareValues = (
-      a: number | string | Date,
-      b: number | string | Date,
+      a: any,
+      b: any,
       desc: boolean
     ): number => {
       const direction = desc ? -1 : 1;
 
-      // Handle different value types
       if (a === b) return 0;
-
-      // Handle null/undefined values
       if (a == null) return direction;
       if (b == null) return -direction;
 
-      // Check if values are dates (try to detect ISO strings)
       if (typeof a === "string" && typeof b === "string") {
-        // ISO date format detection (more reliable than checking for "T")
         const isDateA = /^\d{4}-\d{2}-\d{2}(T|\s)/.test(a);
         const isDateB = /^\d{4}-\d{2}-\d{2}(T|\s)/.test(b);
 
@@ -107,22 +135,17 @@ export function useLeads({ initialLeads = mockLeads }: UseLeadsProps = {}) {
           return (dateA - dateB) * direction;
         }
 
-        // Regular string comparison
         return a.localeCompare(b) * direction;
       }
 
-      // Number comparison
       if (typeof a === "number" && typeof b === "number") {
         return (a - b) * direction;
       }
 
-      // Default comparison (converts to string)
       return String(a).localeCompare(String(b)) * direction;
     };
 
-    // Apply sorting
     const sortedLeads = [...filteredLeads].sort((a, b) => {
-      // Handle multi-sorting using sortingState array
       for (const sort of sorting) {
         const key = sort.id as keyof Lead;
         const compared = compareValues(a[key], b[key], sort.desc);
@@ -131,7 +154,6 @@ export function useLeads({ initialLeads = mockLeads }: UseLeadsProps = {}) {
       return 0;
     });
 
-    // Apply pagination
     const startIdx = pagination.pageIndex * pagination.pageSize;
     const endIdx = startIdx + pagination.pageSize;
     return sortedLeads.slice(startIdx, endIdx);
@@ -139,7 +161,6 @@ export function useLeads({ initialLeads = mockLeads }: UseLeadsProps = {}) {
 
   const updateFilters = (newFilters: Partial<LeadFilters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
-    // Reset to first page when filters change
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
@@ -171,20 +192,16 @@ export function useLeads({ initialLeads = mockLeads }: UseLeadsProps = {}) {
   };
 
   return {
-    // Raw filtered leads (no pagination applied)
     allLeads: filteredLeads,
-    // Leads with pagination and sorting applied
     leads: paginatedAndSortedLeads,
-    // Total count for pagination
     pageCount: Math.ceil(filteredLeads.length / pagination.pageSize),
-    // States
     filters,
     sorting,
     pagination,
-    // Update handlers
+    loading,
     updateFilters,
     handleSortingChange,
     handlePaginationChange,
     handleClearFilters,
   };
-} 
+}
