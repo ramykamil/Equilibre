@@ -1,11 +1,9 @@
 "use client";
 
-// External dependencies
 import * as React from "react";
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import { Zap, SquareTerminal, Users, FileText, BarChart, Settings2, HandCoins } from "lucide-react";
 
-// Internal components
 import { NavMain } from "@/features/dashboard/components/sidebar/nav-main";
 import { NavWorkspace } from "@/features/dashboard/components/sidebar/nav-workspace";
 import { NavSecondary } from "@/features/dashboard/components/sidebar/nav-secondary";
@@ -22,20 +20,94 @@ import {
 } from "@/components/ui/sidebar";
 import { sidebarMenus } from "@/data/sidebar-menus";
 
-/**
- * AppSidebar Component
- *
- * Main application sidebar with navigation sections for the dashboard.
- * Includes app logo/header, main navigation, workspace selection,
- * secondary links, and user profile.
- */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
+  const [activeRole, setActiveRole] = React.useState<"patient" | "professional">("professional");
 
-  // Persist sidebar open state in localStorage
   React.useEffect(() => {
     localStorage.setItem("sidebar-open", open.toString());
   }, [open]);
+
+  React.useEffect(() => {
+    const savedRole = localStorage.getItem("user-role");
+    if (savedRole === "patient" || savedRole === "professional") {
+      setActiveRole(savedRole);
+    }
+  }, []);
+
+  const handleRoleChange = (role: "patient" | "professional") => {
+    setActiveRole(role);
+    localStorage.setItem("user-role", role);
+    // Refresh to update dashboard states across pages
+    window.location.reload();
+  };
+
+  // Define dynamic menu lists based on the active role
+  const patientMenus = [
+    {
+      title: "Mon Espace",
+      url: "/dashboard/overview",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "Vue d'ensemble",
+          url: "/dashboard/overview",
+        },
+        {
+          title: "Journal d'Humeur",
+          url: "/dashboard/reports/moods",
+        },
+      ],
+    },
+    {
+      title: "Mes Rendez-vous",
+      url: "/dashboard/leads",
+      icon: HandCoins,
+      items: [
+        {
+          title: "Réserver une séance",
+          url: "/dashboard/leads/new",
+        },
+        {
+          title: "Mes Consultations",
+          url: "/dashboard/leads",
+        },
+      ],
+    },
+    {
+      title: "Dossier & Tests",
+      url: "/dashboard/customers",
+      icon: Users,
+      items: [
+        {
+          title: "Mon Dossier Codé",
+          url: "/dashboard/customers",
+        },
+        {
+          title: "Passer un Test",
+          url: "/dashboard/customers/tests",
+        },
+      ],
+    },
+    {
+      title: "Mes Factures",
+      url: "/dashboard/invoices",
+      icon: FileText,
+      items: [
+        {
+          title: "Reçus & Paiements",
+          url: "/dashboard/invoices",
+        },
+      ],
+    },
+  ];
+
+  const menuItems = activeRole === "professional" ? sidebarMenus.navMain : patientMenus;
+
+  const activeUser = activeRole === "professional" 
+    ? sidebarMenus.user 
+    : { name: "Ramy Kamil", email: "ramy@example.com", avatar: "/avatars/avatar.png" };
 
   return (
     <Sidebar
@@ -69,12 +141,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={sidebarMenus.navMain} />
-        <NavWorkspace workspaces={sidebarMenus.workspaces} />
+        <NavMain items={menuItems} />
+        <NavWorkspace activeRole={activeRole} onRoleChange={handleRoleChange} />
         <NavSecondary items={sidebarMenus.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={sidebarMenus.user} />
+        <NavUser user={activeUser} />
       </SidebarFooter>
     </Sidebar>
   );

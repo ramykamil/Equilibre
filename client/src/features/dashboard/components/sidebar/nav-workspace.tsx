@@ -1,121 +1,59 @@
 "use client";
 
-// External dependencies
-import {
-  Folder,
-  MoreHorizontal,
-  Share,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react";
-
-// Internal components
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import * as React from "react";
+import { User, ShieldAlert, Check } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-/**
- * NavWorkspace Component
- *
- * Workspace navigation section in the dashboard sidebar.
- * Displays workspaces with dropdown actions for each workspace.
- *
- * @param {Object} props - Component props
- * @param {Object[]} props.workspaces - Array of workspace items
- * @param {string} props.workspaces[].name - Name of the workspace
- * @param {string} props.workspaces[].url - URL for the workspace
- * @param {LucideIcon} props.workspaces[].icon - Icon component for the workspace
- */
 export function NavWorkspace({
-  workspaces,
+  activeRole,
+  onRoleChange,
 }: {
-  workspaces: {
-    name: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
+  activeRole: "patient" | "professional";
+  onRoleChange: (role: "patient" | "professional") => void;
 }) {
-  const { isMobile } = useSidebar();
-
   return (
-    <SidebarGroup
-      className="group-data-[collapsible=icon]:hidden"
-      aria-label="Workspace navigation"
-    >
-      <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
+    <SidebarGroup className="group-data-[collapsible=icon]:hidden" aria-label="Sélecteur d'Espace">
+      <SidebarGroupLabel>Sélecteur d'Espace</SidebarGroupLabel>
       <SidebarMenu>
-        {workspaces.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a
-                href={item.url}
-                className="hover:bg-transparent hover:font-bold hover:underline hover:underline-offset-4 active:bg-transparent"
-                aria-label={`Workspace: ${item.name}`}
-              >
-                <item.icon aria-hidden="true" />
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction
-                  className="cursor-pointer hover:bg-transparent"
-                  aria-label={`${item.name} options`}
-                >
-                  <MoreHorizontal aria-hidden="true" />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-                role="menu"
-                aria-label={`${item.name} options`}
-              >
-                <DropdownMenuItem role="menuitem">
-                  <Folder
-                    className="text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem role="menuitem">
-                  <Share className="text-muted-foreground" aria-hidden="true" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem role="menuitem">
-                  <Trash2
-                    className="text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        ))}
         <SidebarMenuItem>
           <SidebarMenuButton
-            className="cursor-pointer hover:bg-transparent hover:font-bold hover:underline hover:underline-offset-4 active:bg-transparent"
-            aria-label="More workspaces"
+            onClick={() => onRoleChange("professional")}
+            className={`cursor-pointer w-full flex items-center justify-between p-2 rounded-md transition-all ${
+              activeRole === "professional"
+                ? "bg-primary text-primary-foreground font-semibold"
+                : "hover:bg-sidebar-accent"
+            }`}
+            aria-label="Passer à l'espace Professionnel"
           >
-            <MoreHorizontal aria-hidden="true" />
-            <span>More</span>
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="size-4" />
+              <span>Espace Coach/Thérapeute</span>
+            </div>
+            {activeRole === "professional" && <Check className="size-4" />}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            onClick={() => onRoleChange("patient")}
+            className={`cursor-pointer w-full flex items-center justify-between p-2 rounded-md transition-all ${
+              activeRole === "patient"
+                ? "bg-primary text-primary-foreground font-semibold"
+                : "hover:bg-sidebar-accent"
+            }`}
+            aria-label="Passer à l'espace Patient"
+          >
+            <div className="flex items-center gap-2">
+              <User className="size-4" />
+              <span>Espace Patient</span>
+            </div>
+            {activeRole === "patient" && <Check className="size-4" />}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
