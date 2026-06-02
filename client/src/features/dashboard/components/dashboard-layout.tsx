@@ -57,10 +57,16 @@ function DashboardLayoutWrapper({ children }: Props) {
           aria-label="Dashboard content"
         >
           <div className="flex-1">{children}</div>
-          <footer className="mt-8 pt-4 border-t border-border/30 text-center text-xs text-muted-foreground space-y-1">
-            <p>Développé par <span className="font-semibold text-foreground">Ramy Kamil Mecheri</span>. Tous droits réservés.</p>
-            <p>ramy.mecherim2@gmail.com | +213 664 97 59 83</p>
-            <p className="font-medium text-foreground/80">Nabila Hamard - CEO of this project</p>
+          <footer className="mt-8 pt-4 border-t border-border/30 text-center text-xs text-muted-foreground space-y-1.5">
+            <p className="font-bold text-primary tracking-wide text-xs">
+              Sous la Direction de Nabila Hamard — Fondatrice &amp; Directrice Générale de l&apos;Écosystème Équilibre
+            </p>
+            <p className="text-muted-foreground">
+              Développé par <span className="font-semibold text-foreground">Ramy Kamil Mecheri</span>. Tous droits réservés.
+            </p>
+            <p className="text-muted-foreground">
+              ramy.mecherim2@gmail.com | +213 664 97 59 83
+            </p>
           </footer>
         </div>
       </SidebarInset>

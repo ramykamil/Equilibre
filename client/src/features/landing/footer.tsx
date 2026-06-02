@@ -43,16 +43,16 @@ export function Footer() {
         </div>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <p>&copy; {new Date().getFullYear()} {t("brand")}. Tous droits réservés.</p>
+            <p className="font-bold text-primary tracking-wide text-sm mt-2">
+              Sous la Direction de Nabila Hamard — Fondatrice &amp; Directrice Générale de l&apos;Écosystème Équilibre
+            </p>
             <p className="font-semibold text-foreground">
               Développé par Ramy Kamil Mecheri. Tous droits réservés.
             </p>
             <p>
               ramy.mecherim2@gmail.com | +213 664 97 59 83
-            </p>
-            <p className="font-medium text-foreground/80">
-              Nabila Hamard - CEO of this project
             </p>
           </div>
           <p className="self-end md:self-auto">Hébergement certifié Données de Santé (HDS)</p>
