@@ -37,11 +37,6 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     return value !== undefined ? value : key;
   };
 
-  // Prevent flash by waiting for hydration
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <TranslationContext.Provider value={{ lang, setLang, t }}>
       {children}

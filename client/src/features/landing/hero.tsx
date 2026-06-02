@@ -1,195 +1,108 @@
 "use client";
 
-// External imports
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, LineChart, TrendingUp, Users } from "lucide-react";
-
-// Internal imports
+import { ArrowRight, LineChart, TrendingUp, Users, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/translation-provider";
+import { supabase } from "@/lib/supabase";
+import { AuthModal } from "./auth-modal";
 
-/**
- * HeroTitle component displaying the main heading with styled text
- */
-const HeroTitle = () => {
-  return (
-    <div className="relative">
-      <h1 className="inline-block max-w-6xl leading-none font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-        <div className="relative mb-3 pb-2 text-center text-4xl sm:text-5xl md:mb-5 md:text-6xl">
-          <span className="inline-block">TURN INTERACTIONS INTO</span>
-        </div>
-        <div className="mt-1 block text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
-          <span className="bg-primary text-primary-foreground relative inline-block px-4 py-1">
-            REVENUE
-          </span>
-          <span className="text-foreground ml-2 inline-block uppercase">
-            Growth
-          </span>
-        </div>
-      </h1>
-    </div>
-  );
-};
-
-/**
- * BadgeLabel component for displaying feature announcement badges
- */
-const BadgeLabel = ({ text }: { text: string }) => {
-  return (
-    <div
-      className="border-border bg-background mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm"
-      role="note"
-    >
-      <span
-        className="bg-primary flex h-2 w-2 rounded-full"
-        aria-hidden="true"
-      ></span>
-      <span className="text-muted-foreground text-xs font-medium">{text}</span>
-    </div>
-  );
-};
-
-/**
- * CTAButton component for consistent call-to-action buttons
- */
-const CTAButton = ({
-  children,
-  variant = "default",
-  href,
-  icon,
-}: {
-  children: React.ReactNode;
-  variant?: "default" | "outline";
-  href?: string;
-  icon?: React.ReactNode;
-}) => {
-  const buttonClass = cn(
-    "h-16 px-8 text-base font-semibold tracking-wide uppercase sm:text-lg",
-    variant === "outline" && "hover:bg-background/5 border-2",
-  );
-
-  const button = (
-    <Button size="lg" variant={variant as any} className={buttonClass}>
-      {icon && (
-        <span
-          className="bg-primary-foreground/10 mr-3 -ml-2 inline-flex h-8 w-8 items-center justify-center rounded-full"
-          aria-hidden="true"
-        >
-          {icon}
-        </span>
-      )}
-      {children}
-    </Button>
-  );
-
-  if (href) {
-    return <Link href={href}>{button}</Link>;
-  }
-
-  return button;
-};
-
-/**
- * Main Hero component combining all elements
- */
 export function Hero() {
+  const { t } = useTranslation();
+  const [user, setUser] = useState<any>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
-    <section
-      className="relative overflow-hidden"
-      id="home"
-      aria-labelledby="hero-heading"
-    >
+    <section className="relative overflow-hidden" id="home" aria-labelledby="hero-heading">
       {/* Background elements */}
-      <div
-        className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"
-        aria-hidden="true"
-      ></div>
-      <div
-        className="absolute top-0 right-0 -z-10 h-16 w-16 rounded-full bg-yellow-400/20 blur-2xl md:h-72 md:w-72"
-        aria-hidden="true"
-      ></div>
-      <div
-        className="bg-primary/20 absolute bottom-16 left-0 -z-10 h-36 w-36 rounded-full blur-3xl"
-        aria-hidden="true"
-      ></div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" aria-hidden="true" />
+      <div className="absolute top-0 right-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
+      <div className="bg-primary/20 absolute bottom-16 left-0 -z-10 h-36 w-36 rounded-full blur-3xl" aria-hidden="true" />
 
-      <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-32 sm:px-6 sm:py-40 md:min-h-screen lg:min-h-screen lg:px-8">
+      <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-32 sm:px-6 sm:py-40 md:min-h-[85vh] lg:px-8">
         <div className="flex flex-col items-center text-center">
-          <BadgeLabel text="New: Analytics Dashboard 2.0" />
-
-          <HeroTitle />
-
-          <p className="text-muted-foreground mt-8 max-w-2xl text-center text-lg">
-            Transform how you connect with customers. Piper brings AI-powered
-            insights, automation, and a delightful interface to your CRM.
-          </p>
-
-          <div className="relative mt-12 flex flex-col gap-5 sm:flex-row sm:gap-6">
-            {/* Decorative elements around buttons */}
-            <div
-              className="border-primary/30 absolute -top-4 -left-4 h-4 w-4 border-t-2 border-l-2"
-              aria-hidden="true"
-            ></div>
-            <div
-              className="border-primary/30 absolute -right-4 -bottom-4 h-4 w-4 border-r-2 border-b-2"
-              aria-hidden="true"
-            ></div>
-
-            <CTAButton
-              href="/dashboard"
-              icon={<ArrowRight className="h-4 w-4" aria-hidden="true" />}
-            >
-              START FREE TRIAL
-            </CTAButton>
-
-            <CTAButton variant="outline">BOOK A DEMO</CTAButton>
+          <div className="border-border bg-background mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm">
+            <span className="bg-primary flex h-2 w-2 rounded-full" aria-hidden="true" />
+            <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
+              Algeria • DZD / DA
+            </span>
           </div>
 
-          <p className="text-muted-foreground mt-4 text-sm">
-            No credit card required • 14-day free trial
+          <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
+            {t("landingHeroTitle")}
+          </h1>
+
+          <p className="text-muted-foreground mt-6 max-w-2xl text-center text-lg md:text-xl">
+            {t("landingHeroSubtitle")}
           </p>
 
-          {/* Stats bar */}
-          <div
-            className="border-border/50 bg-background/50 mt-16 flex flex-wrap items-center justify-center gap-6 rounded-lg border p-4 sm:gap-10 md:gap-16"
-            aria-label="Key statistics"
-          >
-            <div className="text-center">
+          <div className="relative mt-10 flex flex-col gap-4 sm:flex-row">
+            {user ? (
+              <Link href="/dashboard/overview">
+                <Button size="lg" className="h-16 px-8 text-base font-semibold tracking-wide uppercase">
+                  {t("dashboard")}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                size="lg"
+                onClick={() => setIsAuthOpen(true)}
+                className="h-16 px-8 text-base font-semibold tracking-wide uppercase cursor-pointer"
+              >
+                {t("getStarted")}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            )}
+          </div>
+
+          {/* Stats Bar */}
+          <div className="border-border/50 bg-background/50 mt-16 flex flex-wrap items-center justify-center gap-6 rounded-2xl border p-6 shadow-md backdrop-blur-md">
+            <div className="text-center px-4">
               <div className="flex items-center justify-center gap-1.5">
-                <TrendingUp
-                  className="text-primary h-4 w-4"
-                  aria-hidden="true"
-                />
-                <p className="text-lg font-bold">245%</p>
+                <ShieldAlert className="text-primary h-5 w-5" aria-hidden="true" />
+                <p className="text-xl font-bold">100%</p>
               </div>
-              <p className="text-muted-foreground text-xs">
-                Lead conversion rate
+              <p className="text-muted-foreground text-xs font-medium mt-1">
+                Chiffrement RGPD / HDS
               </p>
             </div>
-            <div className="text-center">
+            <div className="text-center px-4 border-l border-border/50">
               <div className="flex items-center justify-center gap-1.5">
-                <LineChart
-                  className="h-4 w-4 text-yellow-500"
-                  aria-hidden="true"
-                />
-                <p className="text-lg font-bold">3.8M</p>
+                <LineChart className="h-5 w-5 text-yellow-500" aria-hidden="true" />
+                <p className="text-xl font-bold">DZD / DA</p>
               </div>
-              <p className="text-muted-foreground text-xs">
-                Customer interactions
+              <p className="text-muted-foreground text-xs font-medium mt-1">
+                Paiement local algérien
               </p>
             </div>
-            <div className="text-center">
+            <div className="text-center px-4 border-l border-border/50">
               <div className="flex items-center justify-center gap-1.5">
-                <Users className="h-4 w-4 text-green-500" aria-hidden="true" />
-                <p className="text-lg font-bold">15k+</p>
+                <Users className="h-5 w-5 text-green-500" aria-hidden="true" />
+                <p className="text-xl font-bold">4 Groupes</p>
               </div>
-              <p className="text-muted-foreground text-xs">
-                Companies onboarded
+              <p className="text-muted-foreground text-xs font-medium mt-1">
+                Accompagnements dédiés
               </p>
             </div>
           </div>
         </div>
       </div>
+
+      <AuthModal isOpen={isAuthOpen} onOpenChange={setIsAuthOpen} defaultMode="signup" />
     </section>
   );
 }

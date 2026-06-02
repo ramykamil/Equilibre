@@ -123,7 +123,54 @@ export const translations = {
     percentCompleted: "{percent}% completed",
     annuler: "Cancel",
     suivant: "Next",
-    terminer: "Finish"
+    terminer: "Finish",
+
+    // Landing Page
+    landingHeroTitle: "Balance Your Mind & Relationships",
+    landingHeroSubtitle: "A private relational and personal coaching workspace designed for your life goals.",
+    getStarted: "Get Started",
+    signIn: "Sign In",
+    logOut: "Log Out",
+    benefitsTitle: "Tailored Support for Everyone",
+    benefitsSubtitle: "Discover how Équilibre helps you find peace and balance, whatever your current stage of life.",
+    
+    couplesTitle: "Couples & Families",
+    couplesDesc: "Rebuild trust, navigate intimacy issues, and cultivate a stronger communication foundation.",
+    momsTitle: "Mothers & Parents",
+    momsDesc: "Find balance through postpartum support, parental coaching, and boundary setting.",
+    seniorsTitle: "Seniors & Elders",
+    seniorsDesc: "Receive companionship, guidance through transition phases, and support in maintaining active relationships.",
+    studentsTitle: "Students & Youth",
+    studentsDesc: "Develop strategies to combat anxiety, manage stress, organize studies, and enhance focus.",
+
+    pricingTitle: "Simple, Transparent Pricing",
+    pricingSubtitle: "Choose the coaching plan that fits your personal path. All plans display local Algerian DZD.",
+    basicPlan: "Starter Path",
+    proPlan: "Deep Growth",
+    enterprisePlan: "Premium Support",
+    priceBasic: "4,000 DA",
+    pricePro: "7,500 DA",
+    priceEnterprise: "12,000 DA",
+    perMonth: "per session",
+    pricingDescBasic: "Perfect for introductory coaching.",
+    pricingDescPro: "Ideal for deep personal and relationship counseling.",
+    pricingDescEnterprise: "Full-access, comprehensive continuous support.",
+
+    // Auth modal
+    authModalTitle: "Access your Espace Équilibre",
+    authModalSubtitle: "Enter your details to sign in or create a new account.",
+    emailLabel: "Email Address",
+    passwordLabel: "Password",
+    roleLabel: "I am a...",
+    rolePatient: "Client / Patient",
+    roleCoach: "Therapist / Coach",
+    loginBtn: "Sign In",
+    signupBtn: "Create Account",
+    noAccountText: "Don't have an account?",
+    haveAccountText: "Already have an account?",
+    invalidCredentials: "Invalid email or password",
+    signUpSuccess: "Account created successfully! You can now log in.",
+    signUpError: "Error creating account"
   },
   fr: {
     // Brand & Sidebar
@@ -247,6 +294,53 @@ export const translations = {
     percentCompleted: "{percent}% complété",
     annuler: "Annuler",
     suivant: "Suivant",
-    terminer: "Terminer"
+    terminer: "Terminer",
+
+    // Landing Page
+    landingHeroTitle: "Équilibrez Votre Esprit & Vos Relations",
+    landingHeroSubtitle: "Un espace privé d'accompagnement relationnel et personnel adapté à vos objectifs de vie.",
+    getStarted: "Commencer",
+    signIn: "Se connecter",
+    logOut: "Se déconnecter",
+    benefitsTitle: "Un Accompagnement Adapté à Chacun",
+    benefitsSubtitle: "Découvrez comment Équilibre vous aide à retrouver la paix et l'harmonie, peu importe votre situation.",
+    
+    couplesTitle: "Couples & Familles",
+    couplesDesc: "Reconstruire la confiance, surmonter les difficultés intimes et cultiver une communication saine.",
+    momsTitle: "Mères & Parents",
+    momsDesc: "Trouver l'équilibre grâce au soutien post-partum, coaching parental et pose de limites saines.",
+    seniorsTitle: "Seniors & Aînés",
+    seniorsDesc: "Bénéficier d'une présence attentive, d'un soutien lors des transitions de vie et du maintien du lien social.",
+    studentsTitle: "Étudiants & Jeunes",
+    studentsDesc: "Développer des stratégies pour gérer l'anxiété, le stress des examens et optimiser la concentration.",
+
+    pricingTitle: "Des Tarifs Simples et Transparents",
+    pricingSubtitle: "Choisissez le forfait d'accompagnement adapté à votre cheminement. Tous les tarifs sont affichés en Dinars Algériens (DA).",
+    basicPlan: "Premiers Pas",
+    proPlan: "Croissance Profonde",
+    enterprisePlan: "Accompagnement Premium",
+    priceBasic: "4 000 DA",
+    pricePro: "7 500 DA",
+    priceEnterprise: "12 000 DA",
+    perMonth: "par séance",
+    pricingDescBasic: "Idéal pour une séance de prise de contact et de diagnostic.",
+    pricingDescPro: "Idéal pour un travail approfondi personnel ou de couple.",
+    pricingDescEnterprise: "Suivi continu complet avec messagerie prioritaire sécurisée.",
+
+    // Auth modal
+    authModalTitle: "Accédez à votre Espace Équilibre",
+    authModalSubtitle: "Saisissez vos identifiants pour vous connecter ou créer un compte.",
+    emailLabel: "Adresse E-mail",
+    passwordLabel: "Mot de passe",
+    roleLabel: "Je suis...",
+    rolePatient: "Client / Patient",
+    roleCoach: "Thérapeute / Coach",
+    loginBtn: "Se connecter",
+    signupBtn: "Créer un compte",
+    noAccountText: "Vous n'avez pas de compte ?",
+    haveAccountText: "Vous avez déjà un compte ?",
+    invalidCredentials: "E-mail ou mot de passe incorrect",
+    signUpSuccess: "Compte créé avec succès ! Vous pouvez maintenant vous connecter.",
+    signUpError: "Erreur lors de la création du compte"
   }
 };
