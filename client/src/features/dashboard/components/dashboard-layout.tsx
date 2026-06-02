@@ -53,10 +53,15 @@ function DashboardLayoutWrapper({ children }: Props) {
         <DashboardHeader />
         <Separator className="bg-secondary" aria-hidden="true" />
         <div
-          className="flex-1 overflow-auto p-4"
+          className="flex-1 overflow-auto p-4 flex flex-col justify-between"
           aria-label="Dashboard content"
         >
-          {children}
+          <div className="flex-1">{children}</div>
+          <footer className="mt-8 pt-4 border-t border-border/30 text-center text-xs text-muted-foreground space-y-1">
+            <p>Développé par <span className="font-semibold text-foreground">Ramy Kamil Mecheri</span>. Tous droits réservés.</p>
+            <p>ramy.mecherim2@gmail.com | +213 664 97 59 83</p>
+            <p className="font-medium text-foreground/80">Nabila Hamard - CEO of this project</p>
+          </footer>
         </div>
       </SidebarInset>
     </SidebarProvider>
