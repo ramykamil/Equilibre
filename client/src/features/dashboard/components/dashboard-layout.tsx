@@ -1,8 +1,10 @@
 "use client";
 
 // External dependencies
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useIsClient } from "@uidotdev/usehooks";
+import { supabase } from "@/lib/supabase";
 
 // Internal components
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -22,14 +24,36 @@ type Props = {
  * DashboardLayoutWrapper Component
  *
  * Main layout wrapper for dashboard pages.
- * Handles sidebar state and provides the basic layout structure with
- * sidebar, header, and content area.
+ * Handles sidebar state, auth verification, and provides the basic layout
+ * structure with sidebar, header, and content area.
  *
  * @param {Props} props - Component props
  * @param {React.ReactNode} props.children - Content to render in the main area
  */
 function DashboardLayoutWrapper({ children }: Props) {
   const isClient = useIsClient();
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Auth guard: check for valid Supabase session
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          router.replace("/");
+          return;
+        }
+        setIsAuthenticated(true);
+      } catch {
+        router.replace("/");
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   // Get sidebar open state from localStorage, with fallback to true
   const isOpen = isClient
@@ -38,8 +62,8 @@ function DashboardLayoutWrapper({ children }: Props) {
       : true
     : true;
 
-  // Show skeleton during initial client-side rendering
-  if (!isClient) {
+  // Show skeleton during auth check or initial client-side rendering
+  if (!isClient || isCheckingAuth || !isAuthenticated) {
     return <DashboardSkeleton />;
   }
 
