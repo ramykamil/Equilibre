@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { Zap, SquareTerminal, Users, FileText, BarChart, Settings2, HandCoins } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 import { useTranslation } from "@/providers/translation-provider";
 import { NavMain } from "@/features/dashboard/components/sidebar/nav-main";
@@ -25,6 +26,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
   const { t } = useTranslation();
   const [activeRole, setActiveRole] = React.useState<"patient" | "professional">("professional");
+  const [authUser, setAuthUser] = React.useState<{ name: string; email: string } | null>(null);
 
   React.useEffect(() => {
     localStorage.setItem("sidebar-open", open.toString());
@@ -35,6 +37,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     if (savedRole === "patient" || savedRole === "professional") {
       setActiveRole(savedRole);
     }
+  }, []);
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
+        setAuthUser({ name: fullName, email: user.email || "" });
+      }
+    };
+    fetchUser();
   }, []);
 
   const handleRoleChange = (role: "patient" | "professional") => {
@@ -220,9 +233,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const menuItems = activeRole === "professional" ? specialistMenus : patientMenus;
 
-  const activeUser = activeRole === "professional" 
-    ? { ...sidebarMenus.user, name: "Dr. Sophie Martin" } 
-    : { name: "Ramy Kamil", email: "ramy@example.com", avatar: "/avatars/avatar.png" };
+  const activeUser = {
+    name: authUser?.name || sidebarMenus.user.name,
+    email: authUser?.email || sidebarMenus.user.email,
+    avatar: "/avatars/avatar.png",
+  };
 
   return (
     <Sidebar

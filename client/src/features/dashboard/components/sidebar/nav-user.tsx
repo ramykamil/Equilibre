@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 // Internal components
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -53,7 +54,9 @@ export function NavUser({
   const router = useRouter();
   const { isMobile } = useSidebar();
 
-  const signOut = () => {
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("user-role");
     router.push("/");
   };
 
